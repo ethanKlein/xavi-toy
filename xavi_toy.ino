@@ -190,11 +190,12 @@ void loop() {
 
   checkIfPlaying();
 
+  Serial.println(pressed[0]);
+
+
 //   if (justpressed[0]) {
   if (pressed[0] == 0) {
-    Serial.println("pressed 1");
     ledOn(led1);
-    // wave.stop();
     playfile("XAVI.WAV");
     // justpressed[0] = 0;
     while (wave.isplaying && pressed[0]) {
@@ -204,10 +205,10 @@ void loop() {
   }
 
  // if (justpressed[1]) {
-  if (pressed[1] == 1) {
+  if (pressed[1] == 0) {
    ledOn(led2);
-   wave.stop();
-   justpressed[1] = 0;
+   // wave.stop();
+   // justpressed[1] = 0;
    playfile("LASER.WAV");
    while (wave.isplaying && pressed[1]) {
      // Serial.print("2");
@@ -218,38 +219,6 @@ void loop() {
 
 
 
-//  if (justpressed[2]) {
-//    justpressed[2] = 0;
-//    playfile("MI.WAV");
-//    while (wave.isplaying && pressed[2]) {
-//      //Serial.print(".");
-//    }
-//    wave.stop();    
-//  }
-//  if (justpressed[3]) {
-//    justpressed[3] = 0;
-//    playfile("FA.WAV");
-//    while (wave.isplaying && pressed[3]) {
-//      //Serial.print(".");
-//    }
-//    wave.stop();    
-//  }
-//  if (justpressed[4]) {
-//    justpressed[4] = 0;
-//    playfile("SO.WAV");
-//    while (wave.isplaying && pressed[4]) {
-//      //Serial.print(".");
-//    }
-//    wave.stop();    
-//  }
-//  if (justpressed[5]) {
-//    justpressed[5] = 0;
-//    playfile("LA.WAV");
-//    while (wave.isplaying && pressed[5]) {
-//      //Serial.print(".");
-//    }
-//    wave.stop();    
-//  }
 }
 
 
