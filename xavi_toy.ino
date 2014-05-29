@@ -14,16 +14,17 @@ WaveHC wave;      // This is the only wave (audio) object, since we will only pl
 #define DEBOUNCE 5  // button debouncer
 
 // here is where we define the buttons that we'll use. button "1" is the first, button "6" is the 6th, etc
-byte buttons[] = {A0, A1};
+byte buttons[] = {A0, A1, A2};
 // This handy macro lets us determine how big the array up above is, by checking the size
 #define NUMBUTTONS sizeof(buttons)
 // we will track if a button is just pressed, just released, or 'pressed' (the current state
 volatile byte pressed[NUMBUTTONS], justpressed[NUMBUTTONS], justreleased[NUMBUTTONS];
 
 
-// variables ethan added
+// ethan variables
 int led1 = 7;
 int led2 = 6;
+int led3 = 8;
 String currWav = "";
 
 // this handy function will return the number of bytes currently free in RAM, great for debugging!   
@@ -190,9 +191,6 @@ void loop() {
 
   checkIfPlaying();
 
-  Serial.println(pressed[0]);
-
-
 //   if (justpressed[0]) {
   if (pressed[0] == 0) {
     ledOn(led1);
@@ -214,6 +212,18 @@ void loop() {
      // Serial.print("2");
    }
    ledOff(led2);
+ }
+
+ // if (justpressed[2]) {
+  if (pressed[2] == 0) {
+   ledOn(led3);
+   // wave.stop();
+   // justpressed[1] = 0;
+   playfile("LASER.WAV");
+   while (wave.isplaying && pressed[2]) {
+     // Serial.print("2");
+   }
+   ledOff(led3);
  }
 
 
