@@ -72,11 +72,10 @@ void setup() {
   pinMode(4, OUTPUT);
   pinMode(5, OUTPUT);
  
-  // pin7 LED
+  // LEDs
   pinMode(led1, OUTPUT);
-
-  // pin6 LED
   pinMode(led2, OUTPUT);
+  pinMode(led3, OUTPUT);
  
   // Make input & enable pull-up resistors on switch pins
   for (i=0; i< NUMBUTTONS; i++) {
@@ -193,37 +192,40 @@ void loop() {
 
 //   if (justpressed[0]) {
   if (pressed[0] == 0) {
+    Serial.println("button 0");
     ledOn(led1);
     playfile("XAVI.WAV");
     // justpressed[0] = 0;
-    while (wave.isplaying && pressed[0]) {
-      // Serial.print("1");
-    }
+    // while (wave.isplaying && pressed[0]) {
+    //   // Serial.print("1");
+    // }
     ledOff(led1);
   }
 
  // if (justpressed[1]) {
   if (pressed[1] == 0) {
+   Serial.println("button 1");
    ledOn(led2);
    // wave.stop();
    // justpressed[1] = 0;
    playfile("LASER.WAV");
-   while (wave.isplaying && pressed[1]) {
-     // Serial.print("2");
-   }
+   // while (wave.isplaying && pressed[1]) {
+   //   // Serial.print("2");
+   // }
    ledOff(led2);
  }
 
  // if (justpressed[2]) {
   if (pressed[2] == 0) {
-   ledOn(led3);
-   // wave.stop();
-   // justpressed[1] = 0;
-   playfile("LASER.WAV");
-   while (wave.isplaying && pressed[2]) {
-     // Serial.print("2");
-   }
-   ledOff(led3);
+    Serial.println("button 2");
+    ledOn(led3);
+    // wave.stop();
+    // justpressed[1] = 0;
+    playfile("PARTY.WAV");
+    // while (wave.isplaying && pressed[2]) {
+    //   // Serial.print("2");
+    // }
+    ledOff(led3);
  }
 
 
@@ -247,11 +249,11 @@ void playcomplete(char *name) {
 void playfile(char *name) {
   String testWav = name;
   if (testWav == currWav) {
-    Serial.println("same");
+    // Serial.println("same");
   } else {
-    Serial.println("not same");
-    currWav = name;
+    // Serial.println("not same");
 
+    currWav = name;
 
     // see if the wave object is currently doing something
     if (wave.isplaying) { // already playing something, so stop it!
