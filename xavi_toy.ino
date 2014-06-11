@@ -27,6 +27,20 @@ int led2 = 6;
 int led3 = 8;
 String currWav = "";
 
+int inPin = A3;         // the number of the input pin (toggle switch)
+
+int toggleState = HIGH;      // the current state of the output pin
+int reading;           // the current reading from the input pin
+int previous = LOW;    // the previous reading from the input pin
+
+// the follow variables are long's because the time, measured in miliseconds,
+// will quickly become a bigger number than can be stored in an int.
+long time = 0;         // the last time the output pin was toggled
+long debounce = 200;   // the debounce time, increase if the output flickers
+
+
+
+
 // this handy function will return the number of bytes currently free in RAM, great for debugging!   
 int freeRam(void)
 {
@@ -76,6 +90,9 @@ void setup() {
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
   pinMode(led3, OUTPUT);
+
+  // Toggle switch
+  // pinMode(inPin, INPUT);
  
   // Make input & enable pull-up resistors on switch pins
   for (i=0; i< NUMBUTTONS; i++) {
@@ -185,16 +202,58 @@ void checkIfPlaying() {
 }
 
 
+void checkToggle() {
+  reading = digitalRead(inPin);
+
+  // Serial.println(reading);
+  // if (reading == HIGH) {
+  //   Serial.println("HIGH");
+  // } else {
+  //   Serial.println("LOW");
+  // }
+
+  // if the input just went from LOW and HIGH and we've waited long enough
+  // to ignore any noise on the circuit, toggle the output pin and remember
+  // the time
+  if (reading == HIGH && previous == LOW && millis() - time > debounce) {
+    Serial.println("ick");
+    if (toggleState == HIGH)
+      toggleState = LOW;
+    else
+      toggleState = HIGH;
+    time = millis();    
+  }
+
+ if (reading == LOW && previous == HIGH && millis() - time > debounce) {
+   Serial.println("blah");
+   if (toggleState == LOW)
+     toggleState = HIGH;
+   else
+     toggleState = LOW;
+   time = millis();    
+ } 
+
+  previous = reading;  
+}
+
+
 void loop() {
   byte i;
 
   checkIfPlaying();
+  checkToggle();
 
-//   if (justpressed[0]) {
   if (pressed[0] == 0) {
     Serial.println("button 0");
     ledOn(led1);
-    playfile("XAVI.WAV");
+
+    if (toggleState == HIGH)
+      playfile("XAVI.WAV");
+    else {
+      playfile("ISLAND.WAV");
+    }
+
+
     // justpressed[0] = 0;
     // while (wave.isplaying && pressed[0]) {
     //   // Serial.print("1");
@@ -202,31 +261,40 @@ void loop() {
     ledOff(led1);
   }
 
- // if (justpressed[1]) {
   if (pressed[1] == 0) {
    Serial.println("button 1");
    ledOn(led2);
    // wave.stop();
    // justpressed[1] = 0;
-   playfile("LASER.WAV");
+   
+
+   if (toggleState == HIGH)
+     playfile("LASER.WAV");
+   else {
+     playfile("BLUES.WAV");
+   }
    // while (wave.isplaying && pressed[1]) {
    //   // Serial.print("2");
    // }
    ledOff(led2);
- }
+  }
 
- // if (justpressed[2]) {
   if (pressed[2] == 0) {
     Serial.println("button 2");
     ledOn(led3);
     // wave.stop();
     // justpressed[1] = 0;
-    playfile("PARTY.WAV");
+    if (toggleState == HIGH)
+      playfile("SUSP.WAV");
+    else {
+      playfile("PARTY.WAV");
+    }
+
     // while (wave.isplaying && pressed[2]) {
     //   // Serial.print("2");
     // }
     ledOff(led3);
- }
+  }
 
 
 

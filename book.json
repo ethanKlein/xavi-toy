@@ -1,0 +1,24 @@
+{
+    "hpub": 1,
+    "title": "Rightious Persons Foundation",
+    "author": ["Arthur Conan Doyle"],
+    "creator": ["D. Casali", "M. Colombo", "A. Morandi"],
+    "date": "1887-10-10",
+    "cover": "crash.jpg",
+
+    "orientation": "landscape",
+    "zoomable": false,
+
+    "-baker-background": "#ffffff",
+    "-baker-vertical-bounce": true,
+    "-baker-media-autoplay": true,
+    "-baker-background-image-portrait": "gfx/background-portrait.png",
+    "-baker-background-image-landscape": "gfx/background-landscape.png",
+    "-baker-page-numbers-color": "#000000",
+
+    "contents": [
+        "index.html",
+        "page2.html",
+        "page3.html"
+    ]
+}
