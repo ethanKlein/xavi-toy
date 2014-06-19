@@ -29,9 +29,15 @@ String currWav = "";
 
 int inPin = A3;         // the number of the input pin (toggle switch)
 
+int whichButton = A0;   // for passing into checkButton()
+
 int toggleState = HIGH;      // the current state of the output pin
 int reading;           // the current reading from the input pin
 int previous = LOW;    // the previous reading from the input pin
+
+int buttonState = HIGH;      // the current state of the output pin
+int buttonReading;           // the current reading from the input pin
+int buttonPrevious = LOW;    // the previous reading from the input pin
 
 // the follow variables are long's because the time, measured in miliseconds,
 // will quickly become a bigger number than can be stored in an int.
@@ -171,6 +177,7 @@ void check_switches() {
       if ((pressed[index] == LOW) && (currentstate[index] == LOW)) {
           // just pressed
           justpressed[index] = 1;
+
       }
       else if ((pressed[index] == HIGH) && (currentstate[index] == HIGH)) {
           // just released
@@ -201,47 +208,54 @@ void checkIfPlaying() {
   }
 }
 
-
 void checkToggle() {
   reading = digitalRead(inPin);
-
-  // Serial.println(reading);
-  // if (reading == HIGH) {
-  //   Serial.println("HIGH");
-  // } else {
-  //   Serial.println("LOW");
-  // }
-
   // if the input just went from LOW and HIGH and we've waited long enough
-  // to ignore any noise on the circuit, toggle the output pin and remember
-  // the time
+  // to ignore any noise on the circuit, toggle the output pin and remember the time
   if (reading == HIGH && previous == LOW && millis() - time > debounce) {
-    Serial.println("ick");
     if (toggleState == HIGH)
       toggleState = LOW;
     else
       toggleState = HIGH;
     time = millis();    
   }
-
  if (reading == LOW && previous == HIGH && millis() - time > debounce) {
-   Serial.println("blah");
    if (toggleState == LOW)
      toggleState = HIGH;
    else
      toggleState = LOW;
    time = millis();    
  } 
-
   previous = reading;  
+}
+
+void checkButton(int whichButton) {
+  buttonReading = digitalRead(whichButton);
+  // if the input just went from LOW and HIGH and we've waited long enough
+  // to ignore any noise on the circuit, toggle the output pin and remember the time
+  if (buttonReading == HIGH && buttonPrevious == LOW && millis() - time > debounce) {
+    if (buttonState == HIGH)
+      buttonState = LOW;
+    else
+      buttonState = HIGH;
+    time = millis();    
+  }
+ if (buttonReading == LOW && buttonPrevious == HIGH && millis() - time > debounce) {
+   if (buttonState == LOW)
+     buttonState = HIGH;
+   else
+     buttonState = LOW;
+   time = millis();    
+ } 
+  buttonPrevious = buttonReading;
 }
 
 
 void loop() {
   byte i;
-
   checkIfPlaying();
   checkToggle();
+  checkButton(A0);
 
   if (pressed[0] == 0) {
     Serial.println("button 0");
@@ -252,7 +266,6 @@ void loop() {
     else {
       playfile("ISLAND.WAV");
     }
-
 
     // justpressed[0] = 0;
     // while (wave.isplaying && pressed[0]) {
@@ -265,9 +278,8 @@ void loop() {
    Serial.println("button 1");
    ledOn(led2);
    // wave.stop();
-   // justpressed[1] = 0;
+   //justpressed[1] = 0;
    
-
    if (toggleState == HIGH)
      playfile("LASER.WAV");
    else {
@@ -295,12 +307,7 @@ void loop() {
     // }
     ledOff(led3);
   }
-
-
-
-
 }
-
 
 
 // Plays a full file from beginning to end with no pause.
@@ -314,32 +321,34 @@ void playcomplete(char *name) {
 }
 
 
+void playWave(char *name) {
+  // see if the wave object is currently doing something
+  if (wave.isplaying) { // already playing something, so stop it!
+    wave.stop(); // stop it
+  }
+  // look in the root directory and open the file
+  if (!f.open(root, name)) {
+    putstring("Couldn't open file "); Serial.print(name); return;
+  }
+  // OK read the file and turn it into a wave object
+  if (!wave.create(f)) {
+    putstring_nl("Not a valid WAV"); return;
+  }
+  // ok time to play! start playback
+  wave.play(); 
+}
+
+
 void playfile(char *name) {
   String testWav = name;
-  if (testWav == currWav) {
-    // Serial.println("same");
+  if (testWav == currWav) { // same button is pressed
+    if (buttonState == 0) {
+      playWave(name);
+    }
   } else {
     // Serial.println("not same");
-
     currWav = name;
-
-    // see if the wave object is currently doing something
-    if (wave.isplaying) { // already playing something, so stop it!
-      wave.stop(); // stop it
-    }
-    // look in the root directory and open the file
-    if (!f.open(root, name)) {
-      putstring("Couldn't open file "); Serial.print(name); return;
-    }
-    // OK read the file and turn it into a wave object
-    if (!wave.create(f)) {
-      putstring_nl("Not a valid WAV"); return;
-    }
-    
-    // ok time to play! start playback
-    wave.play(); 
-
-
+    playWave(name);
   }
 
 }
