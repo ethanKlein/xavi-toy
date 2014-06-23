@@ -303,11 +303,19 @@ void playfile(int buttonNum) {
   int testButton = buttonNum;
   if (testButton == currButton) { // same button is pressed
     if (buttonFirst[buttonNum] == true) {
-      playWave(bank1[buttonNum]);
+      if (toggleState == HIGH) {
+        playWave(bank1[buttonNum]);        
+      } else {
+        playWave(bank2[buttonNum]);
+      }
     }
   } else {
     currButton = buttonNum;
-    playWave(bank1[buttonNum]);
+    if (toggleState == HIGH) {
+      playWave(bank1[buttonNum]);        
+    } else {
+      playWave(bank2[buttonNum]);
+    }
   }
 }
 
