@@ -26,6 +26,11 @@ int led1 = 7;
 int led2 = 6;
 int led3 = 8;
 String currWav = "";
+int currButton = 5;
+char* bank1[] = {"XAVI.WAV", "LASER.WAV", "SUSP.WAV"};
+char* bank2[] = {"ISLAND.WAV", "BLUES.WAV", "PARTY.WAV"};
+boolean buttonFirst[] = {true, true, true};
+
 
 int inPin = A3;         // the number of the input pin (toggle switch)
 
@@ -153,7 +158,7 @@ void setup() {
 }
 
 SIGNAL(TIMER2_OVF_vect) {
-  check_switches();
+  //check_switches();
 }
 
 void check_switches() {
@@ -163,29 +168,17 @@ void check_switches() {
 
   for (index = 0; index < NUMBUTTONS; index++) {
     currentstate[index] = digitalRead(buttons[index]);   // read the button
-    
-
-    // Serial.print(index, DEC);
-    // Serial.print(": cstate=");
-    // Serial.print(currentstate[index], DEC);
-    // Serial.print(", pstate=");
-    // Serial.print(previousstate[index], DEC);
-    // Serial.print(", press=");
-
-    
     if (currentstate[index] == previousstate[index]) {
-      if ((pressed[index] == LOW) && (currentstate[index] == LOW)) {
+      if ((pressed[index] == LOW) && (currentstate[index] == LOW) && millis() - time > debounce) {
           // just pressed
           justpressed[index] = 1;
-
       }
-      else if ((pressed[index] == HIGH) && (currentstate[index] == HIGH)) {
+      else if ((pressed[index] == HIGH) && (currentstate[index] == HIGH) && millis() - time > debounce) {
           // just released
           justreleased[index] = 1;
       }
       pressed[index] = !currentstate[index];  // remember, digital HIGH means NOT pressed
     }
-    //Serial.println(pressed[index], DEC);
     previousstate[index] = currentstate[index];   // keep a running tally of the buttons
   }
 }
@@ -204,7 +197,8 @@ void ledOff(int led) {
 // if no wav file playing, change currWave to empty string. 
 void checkIfPlaying() {
   if (!wave.isplaying) {
-    currWav = "";
+    // currWav = "";
+    currButton=5;
   }
 }
 
@@ -253,71 +247,68 @@ void checkButton(int whichButton) {
 
 void loop() {
   byte i;
+  check_switches();
   checkIfPlaying();
   checkToggle();
-  checkButton(A0);
 
   if (pressed[0] == 0) {
-    Serial.println("button 0");
     ledOn(led1);
-
-    if (toggleState == HIGH)
-      playfile("XAVI.WAV");
-    else {
-      playfile("ISLAND.WAV");
-    }
-
-    // justpressed[0] = 0;
-    // while (wave.isplaying && pressed[0]) {
-    //   // Serial.print("1");
+    playfile(0);
+    // if (toggleState == HIGH)
+    //   playfile("XAVI.WAV");
+    // else {
+    //   playfile("ISLAND.WAV");
     // }
+    buttonFirst[0] = false;
+  } else {
     ledOff(led1);
+    buttonFirst[0] = true;
   }
 
   if (pressed[1] == 0) {
-   Serial.println("button 1");
    ledOn(led2);
-   // wave.stop();
-   //justpressed[1] = 0;
-   
-   if (toggleState == HIGH)
-     playfile("LASER.WAV");
-   else {
-     playfile("BLUES.WAV");
-   }
-   // while (wave.isplaying && pressed[1]) {
-   //   // Serial.print("2");
+   playfile(1);
+   // if (toggleState == HIGH)
+   //   playfile("LASER.WAV");
+   // else {
+   //   playfile("BLUES.WAV");
    // }
-   ledOff(led2);
+   buttonFirst[1] = false;
+  } else {
+    ledOff(led2);
+    buttonFirst[1] = true;
   }
 
   if (pressed[2] == 0) {
-    Serial.println("button 2");
     ledOn(led3);
-    // wave.stop();
-    // justpressed[1] = 0;
-    if (toggleState == HIGH)
-      playfile("SUSP.WAV");
-    else {
-      playfile("PARTY.WAV");
-    }
-
-    // while (wave.isplaying && pressed[2]) {
-    //   // Serial.print("2");
+    playfile(2);
+    // if (toggleState == HIGH)
+    //   playfile("SUSP.WAV");
+    // else {
+    //   playfile("PARTY.WAV");
     // }
+    buttonFirst[2] = false;
+  } else {
     ledOff(led3);
+    buttonFirst[2] = true;
   }
+
+  // checkButton(A0);
 }
 
 
-// Plays a full file from beginning to end with no pause.
-void playcomplete(char *name) {
-  // call our helper to find and play this name
-  playfile(name);
-  while (wave.isplaying) {
-  // do nothing while its playing
+// void playfile(char *name) {
+void playfile(int buttonNum) {
+  // String testWav = name;
+  int testButton = buttonNum;
+  if (testButton == currButton) { // same button is pressed
+    if (buttonFirst[buttonNum] == true) {
+      playWave(bank1[buttonNum]);
+    }
+  } else {
+    currButton = buttonNum;
+    playWave(bank1[buttonNum]);
   }
-  // now its done playing
 }
 
 
@@ -338,22 +329,15 @@ void playWave(char *name) {
   wave.play(); 
 }
 
-
-void playfile(char *name) {
-  String testWav = name;
-  if (testWav == currWav) { // same button is pressed
-    if (buttonState == 0) {
-      playWave(name);
-    }
-  } else {
-    // Serial.println("not same");
-    currWav = name;
-    playWave(name);
-  }
-
-}
-
-
+// Plays a full file from beginning to end with no pause.
+// void playcomplete(char *name) {
+//   // call our helper to find and play this name
+//   playfile(name);
+//   while (wave.isplaying) {
+//   // do nothing while its playing
+//   }
+//   // now its done playing
+// }
 
 
 
