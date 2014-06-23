@@ -34,8 +34,6 @@ boolean buttonFirst[] = {true, true, true};
 
 int inPin = A3;         // the number of the input pin (toggle switch)
 
-int whichButton = A0;   // for passing into checkButton()
-
 int toggleState = HIGH;      // the current state of the output pin
 int reading;           // the current reading from the input pin
 int previous = LOW;    // the previous reading from the input pin
@@ -170,12 +168,10 @@ void check_switches() {
     currentstate[index] = digitalRead(buttons[index]);   // read the button
     if (currentstate[index] == previousstate[index]) {
       if ((pressed[index] == LOW) && (currentstate[index] == LOW) && millis() - time > debounce) {
-          // just pressed
-          justpressed[index] = 1;
+          justpressed[index] = 1; // just pressed
       }
       else if ((pressed[index] == HIGH) && (currentstate[index] == HIGH) && millis() - time > debounce) {
-          // just released
-          justreleased[index] = 1;
+          justreleased[index] = 1; // just released
       }
       pressed[index] = !currentstate[index];  // remember, digital HIGH means NOT pressed
     }
@@ -197,7 +193,6 @@ void ledOff(int led) {
 // if no wav file playing, change currWave to empty string. 
 void checkIfPlaying() {
   if (!wave.isplaying) {
-    // currWav = "";
     currButton=5;
   }
 }
@@ -223,27 +218,6 @@ void checkToggle() {
   previous = reading;  
 }
 
-void checkButton(int whichButton) {
-  buttonReading = digitalRead(whichButton);
-  // if the input just went from LOW and HIGH and we've waited long enough
-  // to ignore any noise on the circuit, toggle the output pin and remember the time
-  if (buttonReading == HIGH && buttonPrevious == LOW && millis() - time > debounce) {
-    if (buttonState == HIGH)
-      buttonState = LOW;
-    else
-      buttonState = HIGH;
-    time = millis();    
-  }
- if (buttonReading == LOW && buttonPrevious == HIGH && millis() - time > debounce) {
-   if (buttonState == LOW)
-     buttonState = HIGH;
-   else
-     buttonState = LOW;
-   time = millis();    
- } 
-  buttonPrevious = buttonReading;
-}
-
 
 void loop() {
   byte i;
@@ -254,11 +228,6 @@ void loop() {
   if (pressed[0] == 0) {
     ledOn(led1);
     playfile(0);
-    // if (toggleState == HIGH)
-    //   playfile("XAVI.WAV");
-    // else {
-    //   playfile("ISLAND.WAV");
-    // }
     buttonFirst[0] = false;
   } else {
     ledOff(led1);
@@ -268,11 +237,6 @@ void loop() {
   if (pressed[1] == 0) {
    ledOn(led2);
    playfile(1);
-   // if (toggleState == HIGH)
-   //   playfile("LASER.WAV");
-   // else {
-   //   playfile("BLUES.WAV");
-   // }
    buttonFirst[1] = false;
   } else {
     ledOff(led2);
@@ -282,22 +246,14 @@ void loop() {
   if (pressed[2] == 0) {
     ledOn(led3);
     playfile(2);
-    // if (toggleState == HIGH)
-    //   playfile("SUSP.WAV");
-    // else {
-    //   playfile("PARTY.WAV");
-    // }
     buttonFirst[2] = false;
   } else {
     ledOff(led3);
     buttonFirst[2] = true;
   }
-
-  // checkButton(A0);
 }
 
 
-// void playfile(char *name) {
 void playfile(int buttonNum) {
   // String testWav = name;
   int testButton = buttonNum;
